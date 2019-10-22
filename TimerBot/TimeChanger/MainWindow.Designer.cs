@@ -29,7 +29,7 @@
         private void InitializeComponent()
         {
             this.backBtn = new System.Windows.Forms.Button();
-            this.forwardBtn = new System.Windows.Forms.Button();
+            this.resetBtn = new System.Windows.Forms.Button();
             this.label1 = new System.Windows.Forms.Label();
             this.SuspendLayout();
             // 
@@ -43,15 +43,15 @@
             this.backBtn.UseVisualStyleBackColor = true;
             this.backBtn.Click += new System.EventHandler(this.backBtn_Click);
             // 
-            // forwardBtn
+            // resetBtn
             // 
-            this.forwardBtn.Location = new System.Drawing.Point(501, 155);
-            this.forwardBtn.Name = "forwardBtn";
-            this.forwardBtn.Size = new System.Drawing.Size(171, 82);
-            this.forwardBtn.TabIndex = 1;
-            this.forwardBtn.Text = "Forward 7 days";
-            this.forwardBtn.UseVisualStyleBackColor = true;
-            this.forwardBtn.Click += new System.EventHandler(this.forwardBtn_Click);
+            this.resetBtn.Location = new System.Drawing.Point(501, 155);
+            this.resetBtn.Name = "resetBtn";
+            this.resetBtn.Size = new System.Drawing.Size(171, 82);
+            this.resetBtn.TabIndex = 1;
+            this.resetBtn.Text = "Reset";
+            this.resetBtn.UseVisualStyleBackColor = true;
+            this.resetBtn.Click += new System.EventHandler(this.forwardBtn_Click);
             // 
             // label1
             // 
@@ -68,7 +68,7 @@
             this.AutoScaleMode = System.Windows.Forms.AutoScaleMode.Font;
             this.ClientSize = new System.Drawing.Size(757, 311);
             this.Controls.Add(this.label1);
-            this.Controls.Add(this.forwardBtn);
+            this.Controls.Add(this.resetBtn);
             this.Controls.Add(this.backBtn);
             this.HelpButton = true;
             this.Name = "MainWindow";
@@ -82,7 +82,7 @@
         #endregion
 
         private System.Windows.Forms.Button backBtn;
-        private System.Windows.Forms.Button forwardBtn;
+        private System.Windows.Forms.Button resetBtn;
         private System.Windows.Forms.Label label1;
     }
 }

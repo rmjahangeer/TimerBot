@@ -1,13 +1,8 @@
 ﻿using System;
-using System.Collections.Generic;
-using System.ComponentModel;
-using System.Data;
-using System.Drawing;
-using System.Linq;
+using System.Net.Http;
 using System.Runtime.InteropServices;
-using System.Text;
-using System.Threading.Tasks;
 using System.Windows.Forms;
+using Newtonsoft.Json;
 
 namespace TimeChanger
 {
@@ -29,13 +24,10 @@ namespace TimeChanger
         [DllImport("kernel32.dll", SetLastError = true)]
         public static extern bool SetSystemTime(ref SYSTEMTIME st);
 
-        public readonly DateTime now;
-        public static DateTime ChangingDate;
+        public static int intervalDays = 7;
         public MainWindow()
         {
             InitializeComponent();
-            now = DateTime.Now;
-            ChangingDate = now;
         }
 
         private void Form1_Load(object sender, EventArgs e)
@@ -43,41 +35,61 @@ namespace TimeChanger
 
         }
 
-        private void backBtn_Click(object sender, EventArgs e)
+        private async void backBtn_Click(object sender, EventArgs e)
         {
-            var date = ChangingDate.AddDays(-7);
-            SYSTEMTIME st = new SYSTEMTIME
+            backBtn.Enabled = false;
+            var orignalText = backBtn.Text;
+            backBtn.Text = @"Working...";
+            var client = new HttpClient();
+            var request = new HttpRequestMessage(HttpMethod.Get, new Uri("http://worldclockapi.com/api/json/utc/now"));
+            var response = await client.SendAsync(request);
+            var responseObj = JsonConvert.DeserializeObject<dynamic>(await response.Content.ReadAsStringAsync());
+            DateTime date = DateTime.SpecifyKind(DateTime.FromFileTimeUtc((long)responseObj.currentFileTime), DateTimeKind.Utc).AddDays(-1 * intervalDays);
+            var st = new SYSTEMTIME
             {
                 wYear = (short)date.Year,
                 wMonth = (short)date.Month,
                 wDay = (short)date.Day,
-                wHour = (short)date.Hour,
+                wHour = (short)date.Hour, //== 0 ? (short)12 : (short)date.Hour,
                 wMinute = (short)date.Minute,
-                wSecond = (short)date.Second
+                wSecond = (short)date.Second,
+                wDayOfWeek = (short)date.DayOfWeek
             };
-            // must be short
 
             SetSystemTime(ref st); // invoke this method.
-            ChangingDate = date;
+
+            backBtn.Enabled = true;
+            backBtn.Text = orignalText;
+            intervalDays += 7;
         }
 
-        private void forwardBtn_Click(object sender, EventArgs e)
+        private async void forwardBtn_Click(object sender, EventArgs e)
         {
-            var date = ChangingDate.AddDays(7);
-            SYSTEMTIME st = new SYSTEMTIME
+
+            resetBtn.Enabled = false;
+            var orignalText = resetBtn.Text;
+            resetBtn.Text = @"Working...";
+            var client = new HttpClient();
+            var request = new HttpRequestMessage(HttpMethod.Get, new Uri("http://worldclockapi.com/api/json/utc/now"));
+            var response = await client.SendAsync(request);
+            var responseObj = JsonConvert.DeserializeObject<dynamic>(await response.Content.ReadAsStringAsync());
+            DateTime date = DateTime.SpecifyKind(DateTime.FromFileTimeUtc((long)responseObj.currentFileTime), DateTimeKind.Utc);
+            //var date = TimeZoneInfo.ConvertTimeFromUtc(dateUtc, timeZoneInfo);
+            var st = new SYSTEMTIME
             {
                 wYear = (short)date.Year,
                 wMonth = (short)date.Month,
                 wDay = (short)date.Day,
-                wHour = (short)date.Hour,
+                wHour = (short)date.Hour, //== 0 ? (short)12 : (short)date.Hour,
                 wMinute = (short)date.Minute,
-                wSecond = (short)date.Second
+                wSecond = (short)date.Second,
+                wDayOfWeek = (short)date.DayOfWeek
             };
-            // must be short
 
             SetSystemTime(ref st); // invoke this method.
-            ChangingDate = date;
-
+            intervalDays = 7;
+            resetBtn.Enabled = true;
+            resetBtn.Text = orignalText;
         }
     }
 }
