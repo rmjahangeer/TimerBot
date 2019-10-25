@@ -19,6 +19,8 @@ namespace TimerBot
         public bool IsPast { get; set; }
         [Index(6)]
         public int Clicks { get; set; }
+        [Index(7)]
+        public bool KillSelf { get; set; }
 
     }
 }

@@ -3,6 +3,7 @@ using System.Configuration;
 using System.IO;
 using System.Linq;
 using System.Runtime.InteropServices;
+using System.Threading;
 using AutoIt;
 using CsvHelper;
 using System.Timers;
@@ -32,28 +33,32 @@ namespace TimerBot
 
         static void Main(string[] args)
         {
-            /*var explorer = Application.Launch("explorer.exe");
-            explorer.WaitWhileBusy();*/
-
             config = ReadConfig();
             if (config != null)
             {
-                AutoItX.WinMinimizeAll();
-                var timer = new Timer
+                //AutoItX.WinMinimizeAll();
+
+                if (config.KillSelf)
                 {
-                    Interval = 1000 * /*60 **/ config.Interval,
-                    Enabled = true
-                };
+                    DoStuff();
+                    Thread.Sleep(1000);
+                }
+                else
+                {
+                    var timer = new Timer
+                    {
+                        Interval = 1000 * /*60 **/ config.Interval,
+                        Enabled = true
+                    };
 
-                timer.Elapsed += OnTimedEvent;
-                timer.Start();
-
-            }
-
-            var key = Console.ReadLine();
-            while (key != "q")
-            {
-                key = Console.ReadLine();
+                    timer.Elapsed += OnTimedEvent;
+                    timer.Start();
+                    var key = Console.ReadLine();
+                    while (key != "q")
+                    {
+                        key = Console.ReadLine();
+                    }
+                }
             }
         }
 
@@ -134,7 +139,10 @@ namespace TimerBot
 
             SetSystemTime(ref st); // invoke this method.
 
-            AutoItX.MouseClick("LEFT", (int)new AppSettingsReader().GetValue("X-Axis", typeof(int)), (int)new AppSettingsReader().GetValue("Y-Axis", typeof(int)), config.Clicks);
+            if (config.Clicks > 0)
+            {
+                AutoItX.MouseClick("LEFT", (int)new AppSettingsReader().GetValue("X-Axis", typeof(int)), (int)new AppSettingsReader().GetValue("Y-Axis", typeof(int)), config.Clicks);
+            }
         }
     }
 }
